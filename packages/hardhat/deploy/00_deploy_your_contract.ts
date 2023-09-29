@@ -176,13 +176,17 @@ const deployYourContract: DeployFunction = async function (hre: HardhatRuntimeEn
   );
 
   await execute("GridNFT", 
-  {from: deployer, log: true, autoMine: true},
-  "safeMint",
-  deployer,
-);
+    {from: deployer, log: true, autoMine: true},
+    "safeMint",
+    deployer,
+  );
 
-
-
+  await execute("OTOKEN", 
+    {from: deployer, log: true, autoMine: true},
+    "transfer",
+    "0x1A96Db12AD7f0c9f91C538d16c39C360b5E8Fb21", 
+    "100000000000000000000",
+  );
 
 };
 
