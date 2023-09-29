@@ -314,7 +314,7 @@ const contracts = {
           ],
         },
         GridNFT: {
-          address: "0x4b6aB5F819A515382B0dEB6935D793817bB4af28",
+          address: "0xa513E6E4b8f2a923D98304ec87F64353C4D5C853",
           abi: [
             {
               inputs: [
@@ -1204,7 +1204,7 @@ const contracts = {
           ],
         },
         GridRewarder: {
-          address: "0xd43F5E24C6b2edc1dFDE8548cDdaBeFFA6eCc822",
+          address: "0x3B02fF1e626Ed7a8fd6eC5299e2C54e1421B626B",
           abi: [
             {
               inputs: [
@@ -1706,7 +1706,7 @@ const contracts = {
           ],
         },
         Minter: {
-          address: "0xCace1b78160AE76398F486c8a18044da0d66d86D",
+          address: "0x2279B7A0a67DB372996a5FaB50D91eAA73d2eBe6",
           abi: [
             {
               inputs: [
@@ -1917,7 +1917,7 @@ const contracts = {
           ],
         },
         Multicall: {
-          address: "0xD5ac451B0c50B9476107823Af206eD814a2e2580",
+          address: "0x8A791620dd6260079BF849Dc5567aDC3F2FdC318",
           abi: [
             {
               inputs: [
@@ -2746,7 +2746,7 @@ const contracts = {
           ],
         },
         OTOKEN: {
-          address: "0x0F9019Dd30C7Cc5774d4883fba933aA0Caba9424",
+          address: "0x75537828f2ce51be7289709686A69CbFDbB714F1",
           abi: [
             {
               inputs: [
@@ -3155,7 +3155,7 @@ const contracts = {
           ],
         },
         TOKEN: {
-          address: "0x5067457698Fd6Fa1C6964e416b3f42713513B3dD",
+          address: "0x5FC8d32690cc91D4c39d9d3abcBD16989F875707",
           abi: [
             {
               inputs: [
@@ -4078,7 +4078,7 @@ const contracts = {
           ],
         },
         TOKENFees: {
-          address: "0xA11e1b0B25E41166602a1CD280B594b656dd4234",
+          address: "0x856e4424f806D16E8CBC702B3c0F2ede5468eae5",
           abi: [
             {
               inputs: [
@@ -4228,7 +4228,7 @@ const contracts = {
           ],
         },
         TOKENRewarder: {
-          address: "0xD8cC8A2C3b234A5CdA3876C39Ec13DF06496Ed55",
+          address: "0xd8058efe0198ae9dD7D563e1b4938Dcbc86A1F81",
           abi: [
             {
               inputs: [

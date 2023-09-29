@@ -1,27 +1,41 @@
 import type { NextPage } from "next";
-import { MetaHeader } from "~~/components/MetaHeader";
-import { ContractData } from "~~/components/example-ui/ContractData";
-import { ContractInteraction } from "~~/components/example-ui/ContractInteraction";
 import { PortfolioData } from "~~/components/example-ui/PortfolioData";
+import { GlobalData } from "~~/components/example-ui/GlobalData";
+import { UserData } from "~~/components/example-ui/UserData";
+import UserActions from "~~/components/example-ui/UserActions";
+import PixelGrid from "~~/components/example-ui/PixelGrid"; // Import the new component
 
 const ExampleUI: NextPage = () => {
   return (
-    <>
-      <MetaHeader
-        title="Example UI | Scaffold-ETH 2"
-        description="Example UI created with 🏗 Scaffold-ETH 2, showcasing some of its features."
-      >
-        {/* We are importing the font this way to lighten the size of SE2. */}
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link href="https://fonts.googleapis.com/css2?family=Bai+Jamjuree&display=swap" rel="stylesheet" />
-      </MetaHeader>
-      <div className="grid lg:grid-cols-2 flex-grow" data-theme="exampleUi">
-        <div className="grid lg:grid-rows-2 flex-grow" data-theme="exampleUi">
+    <div className="flex flex-col flex-grow pt-8" data-theme="exampleUi">
+      <div className="mb-8 p-4 border rounded">
+        <GlobalData />
+      </div>
+      <div className="flex flex-row flex-grow mb-8 border p-4 rounded" data-theme="exampleUi">
+        <div className="flex flex-col w-1/4 space-y-4">
           <PortfolioData />
+          <UserData />
+        </div>
+        <div className="flex flex-col w-1/4 space-y-4">
+          <UserActions />
+        </div>
+        <div className="flex flex-col w-1/2 space-y-4 items-start">
+          <PixelGrid />
         </div>
       </div>
-    </>
+    </div>
   );
 };
 
 export default ExampleUI;
+
+
+
+
+
+
+
+
+
+
+

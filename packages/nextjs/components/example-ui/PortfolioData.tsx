@@ -1,10 +1,6 @@
 import { useAccount } from "wagmi";
-import {
-  useScaffoldContract,
-  useScaffoldContractRead,
-  useScaffoldEventHistory,
-  useScaffoldEventSubscriber,
-} from "~~/hooks/scaffold-eth";
+import {useScaffoldContractRead} from "~~/hooks/scaffold-eth";
+import { formatUnits } from "viem";
 
 export const PortfolioData = () => {
   const { address } = useAccount();
@@ -15,40 +11,25 @@ export const PortfolioData = () => {
     args: [address],
   });
 
-  useScaffoldEventSubscriber({
-    contractName: "YourContract",
-    eventName: "GreetingChange",
-    listener: logs => {
-      logs.map(log => {
-        const { greetingSetter, value, premium, newGreeting } = log.args;
-        console.log("📡 GreetingChange event", greetingSetter, value, premium, newGreeting);
-      });
-    },
-  });
-
-  const {
-    data: myGreetingChangeEvents,
-    isLoading: isLoadingEvents,
-    error: errorReadingEvents,
-  } = useScaffoldEventHistory({
-    contractName: "YourContract",
-    eventName: "GreetingChange",
-    fromBlock: process.env.NEXT_PUBLIC_DEPLOY_BLOCK ? BigInt(process.env.NEXT_PUBLIC_DEPLOY_BLOCK) : 0n,
-    filters: { greetingSetter: address },
-    blockData: true,
-  });
-
-  console.log("Events:", isLoadingEvents, errorReadingEvents, myGreetingChangeEvents);
-
-  const { data: yourContract } = useScaffoldContract({ contractName: "YourContract" });
-  console.log("yourContract: ", yourContract);
+  const formattedTotal = portfolio?.total !== undefined ? `$${parseFloat(formatUnits(portfolio?.total, 18)).toFixed(4)}` : "N/A";
+  const formattedStakingRewards = portfolio?.stakingRewards !== undefined ? `$${parseFloat(formatUnits(portfolio?.stakingRewards, 18)).toFixed(4)}/week` : "N/A";
+  const formattedGridRewards = portfolio?.gridRewards !== undefined ? `$${parseFloat(formatUnits(portfolio?.gridRewards, 18)).toFixed(4)}/week` : "N/A";
 
   return (
-        <div className="flex flex-col w-full mx-5 sm:mx-8 2xl:mx-20">
-            <div>Hello world</div>
-            <div>Hello world</div>
-            <div>Hello world</div>
-            <div>Hello world</div>
-        </div>
+    <div className="flex flex-col w-full p-4 border rounded overflow-hidden">
+      <h2 className="text-2xl font-bold mb-4">Portfolio</h2>
+      <div className="flex justify-between">
+        <span className="font-semibold">Total:</span>
+        <span>{formattedTotal}</span>
+      </div>
+      <div className="flex justify-between">
+        <span className="font-semibold">Staking Rewards:</span>
+        <span>{formattedStakingRewards}</span>
+      </div>
+      <div className="flex justify-between">
+        <span className="font-semibold">Grid Rewards:</span>
+        <span>{formattedGridRewards}</span>
+      </div>
+    </div>
   );
 };
