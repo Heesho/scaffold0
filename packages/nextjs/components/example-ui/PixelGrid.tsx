@@ -1,7 +1,7 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { formatUnits } from "viem";
 import { useAccount } from "wagmi";
-import { useScaffoldContractRead, useScaffoldContractWrite } from "~~/hooks/scaffold-eth";
+import { useScaffoldContract, useScaffoldContractRead, useScaffoldContractWrite } from "~~/hooks/scaffold-eth";
 
 type colorMapType = { [key: number]: string };
 
@@ -14,11 +14,41 @@ const colorMap: colorMapType = {
   5: "#db03fc",
 };
 
+const MAX_UINT256 = BigInt("0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF");
+
 const PixelGrid: React.FC = () => {
   const { address } = useAccount();
   const [colorSelected, setColorSelected] = useState<number>(0);
   const [xSelected, setXSelected] = useState<number>(0);
   const [ySelected, setYSelected] = useState<number>(0);
+  const [isApproved, setIsApproved] = useState(false);
+
+  const { data: gridContract } = useScaffoldContract({
+    contractName: "GridNFT",
+  });
+
+  const gridAddress = gridContract?.address;
+
+  const allowanceData = useScaffoldContractRead({
+    contractName: "OTOKEN",
+    functionName: "allowance",
+    args: [address, gridAddress],
+  });
+
+  useEffect(() => {
+    if (allowanceData.data !== undefined) {
+      const requiredAllowance = BigInt("1000000000000000000");
+      if (BigInt(allowanceData.data) >= requiredAllowance) {
+        setIsApproved(true);
+      }
+    }
+  }, [allowanceData]);
+
+  const { writeAsync: approveAsync } = useScaffoldContractWrite({
+    contractName: "OTOKEN",
+    functionName: "approve",
+    args: [gridAddress, MAX_UINT256],
+  });
 
   const { data: gridData } = useScaffoldContractRead({
     contractName: "Multicall",
@@ -38,6 +68,9 @@ const PixelGrid: React.FC = () => {
   };
 
   const handlePlaceTile = async () => {
+    if (!isApproved) {
+      await approveAsync();
+    }
     await placeAsync();
   };
 

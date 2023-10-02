@@ -9,8 +9,8 @@ import { UserData } from "~~/components/example-ui/UserData";
 
 const ExampleUI: NextPage = () => {
   return (
-    <div className="flex flex-col flex-grow pt-8" data-theme="exampleUi">
-      <div className="mb-8 p-4 border rounded">
+    <div className="flex flex-col pt-8" data-theme="exampleUi">
+      <div className="p-4 border rounded">
         <GlobalData />
       </div>
       <div className="flex mb-8 border p-4 rounded" data-theme="exampleUi">
