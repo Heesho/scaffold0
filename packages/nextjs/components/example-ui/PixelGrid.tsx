@@ -16,7 +16,12 @@ const colorMap: colorMapType = {
 
 const MAX_UINT256 = BigInt("0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF");
 
-const PixelGrid: React.FC = () => {
+type PixelGridProps = {
+  nftId: number;
+  onBack: () => void;
+};
+
+const PixelGrid: React.FC<PixelGridProps> = ({ nftId, onBack }) => {
   const { address } = useAccount();
   const [colorSelected, setColorSelected] = useState<number>(0);
   const [xSelected, setXSelected] = useState<number>(0);
@@ -32,7 +37,6 @@ const PixelGrid: React.FC = () => {
   const formattedBalance =
     balance.data !== undefined ? `${parseFloat(formatUnits(balance.data, 18)).toFixed(4)}` : "N/A";
 
-
   const { data: gridContract } = useScaffoldContract({
     contractName: "GridNFT",
   });
@@ -45,7 +49,7 @@ const PixelGrid: React.FC = () => {
     args: [address, gridAddress],
   });
 
-  const [selectedPixels, setSelectedPixels] = useState<{ x: number, y: number }[]>([]);
+  const [selectedPixels, setSelectedPixels] = useState<{ x: number; y: number }[]>([]);
 
   useEffect(() => {
     if (allowanceData.data !== undefined) {
@@ -65,7 +69,7 @@ const PixelGrid: React.FC = () => {
   const { data: gridData } = useScaffoldContractRead({
     contractName: "Multicall",
     functionName: "getGrid",
-    args: [BigInt("0")],
+    args: [BigInt(nftId)],
   });
 
   const { writeAsync: placeAsync } = useScaffoldContractWrite({
@@ -92,7 +96,7 @@ const PixelGrid: React.FC = () => {
     const xValues = selectedPixels.map(pixel => BigInt(pixel.x));
     const yValues = selectedPixels.map(pixel => BigInt(pixel.y));
     await placeAsync({
-      args: [BigInt("0"), address, xValues, yValues, BigInt(colorSelected)],
+      args: [BigInt(nftId), address, xValues, yValues, BigInt(colorSelected)],
     });
 
     setSelectedPixels([]);
@@ -100,53 +104,68 @@ const PixelGrid: React.FC = () => {
 
   return (
     <div className="flex items-start gap-3">
-      <div className="flex flex-col gap-2 border border-gray p-2 w-32">
-        {/* Displaying OTOKEN spending and balance */}
-        <p className="font-thin text-md text-gray-subtitle">Tiles to Place: {selectedPixels.length}</p>
-        <p className="font-thin text-md text-gray-subtitle">OTOKEN Balance: {formattedBalance}</p>
-
-        <p className="font-thin text-md text-gray-subtitle mt-2 mb-2">Color: </p>
-        <div className="flex flex-wrap items-center justify-center gap-2">
-          {Object.keys(colorMap).map(color => {
-            return (
-              <div
-                key={color}
-                className={`hover:border-2 hover:border-white-400 rounded-full h-6 w-6`}
-                style={{ backgroundColor: `${colorMap[Number(color)]}` }}
-                onClick={() => setColorSelected(Number(color))}
-              ></div>
-            );
-          })}
+      {/* This div wraps the back button, the NFT ID display, and the inner contents */}
+      <div className="flex flex-col w-full">
+        {/* This div contains the back button and the NFT ID display */}
+        <div className="flex items-center gap-4 mb-3">
+          <button onClick={onBack} className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-3">
+            Back
+          </button>
+          <h2 className="text-2xl">NFT ID: {nftId}</h2>
         </div>
-        <div 
-          className="rounded-lg h-6 w-full"
-          style={{ backgroundColor: colorMap[colorSelected] }}
-        ></div>
-        <button
-          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-3 mt-2 rounded w-full"
-          onClick={() => handlePlaceTile()}
-        >
-          Place
-        </button>
-      </div>
-            <div className="grid grid-cols-10 gap-0 w-auto h-auto mx-auto">
-        {gridData &&
-          gridData.map((row, rowIndex) =>
-            row.map((tile, colIndex) => {
-              const formattedColor = Number(tile.color);
-              const isSelected = selectedPixels.some(pixel => pixel.x === rowIndex && pixel.y === colIndex);
-              return (
-                <div
-                  key={`${rowIndex}-${colIndex}`}
-                  className={`w-12 h-12 ${isSelected ? "border-4 border-white" : "border-white"}`} 
-                  style={{ backgroundColor: colorMap[formattedColor] }}
-                  onClick={() => {
-                    handleTileSectionClick(rowIndex, colIndex);
-                  }}
-                ></div>
-              );
-            }),
-          )}
+
+        {/* This div wraps the color selector and the grid */}
+        <div className="flex items-start">
+          <div className="flex flex-col border border-gray p-2 w-32 gap-2">
+            <div className="flex justify-between">
+              <div className="border p-2">{selectedPixels.length}</div>
+              <span>oTOKEN</span>
+            </div>
+            <p className="font-thin text-md text-gray-subtitle">Balance: {formattedBalance}</p>
+
+            <p className="font-thin text-md text-gray-subtitle mt-2 mb-2">Color: </p>
+            <div className="flex flex-wrap items-center justify-center gap-2">
+              {Object.keys(colorMap).map(color => {
+                return (
+                  <div
+                    key={color}
+                    className={`hover:border-2 hover:border-white-400 rounded-full h-6 w-6`}
+                    style={{ backgroundColor: `${colorMap[Number(color)]}` }}
+                    onClick={() => setColorSelected(Number(color))}
+                  ></div>
+                );
+              })}
+            </div>
+            <div className="rounded-lg h-6 w-full " style={{ backgroundColor: colorMap[colorSelected] }}></div>
+            <button
+              className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-3 mt-2 rounded w-full"
+              onClick={() => handlePlaceTile()}
+            >
+              Place
+            </button>
+          </div>
+
+          {/* Grid tiles */}
+          <div className="grid grid-cols-10 gap-0 w-auto h-auto mx-auto">
+            {gridData &&
+              gridData.map((row, rowIndex) =>
+                row.map((tile, colIndex) => {
+                  const formattedColor = Number(tile.color);
+                  const isSelected = selectedPixels.some(pixel => pixel.x === rowIndex && pixel.y === colIndex);
+                  return (
+                    <div
+                      key={`${rowIndex}-${colIndex}`}
+                      className={`w-12 h-12 ${isSelected ? "border-4 border-white" : "border-white"}`}
+                      style={{ backgroundColor: colorMap[formattedColor] }}
+                      onClick={() => {
+                        handleTileSectionClick(rowIndex, colIndex);
+                      }}
+                    ></div>
+                  );
+                }),
+              )}
+          </div>
+        </div>
       </div>
     </div>
   );
