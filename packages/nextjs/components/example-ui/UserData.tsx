@@ -59,12 +59,12 @@ export const UserData = () => {
         <div>
           <div className="font-bold">vTOKEN</div>
           <div>APR: {apr}</div>
-          <div>Voting Power: {accountPower}</div>
+          <div>Power: {accountPower}</div>
           <div>Credit: {accountBorrowCredit} BASE</div>
           <div>Debt: {accountBorrowDebt} BASE</div>
         </div>
         <div className="text-right">
-          <div>{accountBase}</div>
+          <div>{accountStaked}</div>
         </div>
       </div>
 

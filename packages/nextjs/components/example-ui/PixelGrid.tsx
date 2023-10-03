@@ -23,6 +23,16 @@ const PixelGrid: React.FC = () => {
   const [ySelected, setYSelected] = useState<number>(0);
   const [isApproved, setIsApproved] = useState(false);
 
+  const balance = useScaffoldContractRead({
+    contractName: "OTOKEN",
+    functionName: "balanceOf",
+    args: [address],
+  });
+
+  const formattedBalance =
+    balance.data !== undefined ? `${parseFloat(formatUnits(balance.data, 18)).toFixed(4)}` : "N/A";
+
+
   const { data: gridContract } = useScaffoldContract({
     contractName: "GridNFT",
   });
@@ -34,6 +44,8 @@ const PixelGrid: React.FC = () => {
     functionName: "allowance",
     args: [address, gridAddress],
   });
+
+  const [selectedPixels, setSelectedPixels] = useState<{ x: number, y: number }[]>([]);
 
   useEffect(() => {
     if (allowanceData.data !== undefined) {
@@ -63,64 +75,70 @@ const PixelGrid: React.FC = () => {
   });
 
   const handleTileSectionClick = (x: number, y: number) => {
-    setXSelected(x);
-    setYSelected(y);
+    // Check if the pixel is already selected
+    const pixelAlreadySelected = selectedPixels.some(pixel => pixel.x === x && pixel.y === y);
+
+    if (pixelAlreadySelected) {
+      setSelectedPixels(prev => prev.filter(pixel => !(pixel.x === x && pixel.y === y)));
+    } else {
+      setSelectedPixels(prev => [...prev, { x, y }]);
+    }
   };
 
   const handlePlaceTile = async () => {
     if (!isApproved) {
       await approveAsync();
     }
-    await placeAsync();
+    const xValues = selectedPixels.map(pixel => BigInt(pixel.x));
+    const yValues = selectedPixels.map(pixel => BigInt(pixel.y));
+    await placeAsync({
+      args: [BigInt("0"), address, xValues, yValues, BigInt(colorSelected)],
+    });
+
+    setSelectedPixels([]);
   };
 
   return (
-    <div className="flex items-center justify-between gap-3">
-      <div className="flex flex-col items-center gap-2 border border-gray p-2">
-        <div className="flex flex-col items-center">
-          <p className="font-thin text-md text-gray-subtitle">Tile Selected: </p>
-          <div className="flex gap-2 items-center">
-            <p className="font-thin text-md text-gray-subtitle">
-              X: <span> {ySelected}</span>{" "}
-            </p>
-            <p className="font-thin text-md text-gray-subtitle">
-              Y: <span> {xSelected}</span>{" "}
-            </p>
-          </div>
-        </div>
-        <p className="font-thin text-md text-gray-subtitle">Choose a color: </p>
-        <div className="flex items-center justify-center w-44 ">
+    <div className="flex items-start gap-3">
+      <div className="flex flex-col gap-2 border border-gray p-2 w-32">
+        {/* Displaying OTOKEN spending and balance */}
+        <p className="font-thin text-md text-gray-subtitle">Tiles to Place: {selectedPixels.length}</p>
+        <p className="font-thin text-md text-gray-subtitle">OTOKEN Balance: {formattedBalance}</p>
+
+        <p className="font-thin text-md text-gray-subtitle mt-2 mb-2">Color: </p>
+        <div className="flex flex-wrap items-center justify-center gap-2">
           {Object.keys(colorMap).map(color => {
             return (
               <div
                 key={color}
-                className={`hover:border-2 hover:border-white-400  bg-[${color}] h-8 w-8`}
+                className={`hover:border-2 hover:border-white-400 rounded-full h-6 w-6`}
                 style={{ backgroundColor: `${colorMap[Number(color)]}` }}
                 onClick={() => setColorSelected(Number(color))}
               ></div>
             );
           })}
         </div>
-        <div className="flex rounded p-2 gap-1">
-          <div className="w-10 h-10 border border-white" style={{ backgroundColor: colorMap[colorSelected] }}></div>
-          <button
-            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-            onClick={() => handlePlaceTile()}
-          >
-            Place
-          </button>
-        </div>
+        <div 
+          className="rounded-lg h-6 w-full"
+          style={{ backgroundColor: colorMap[colorSelected] }}
+        ></div>
+        <button
+          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-3 mt-2 rounded w-full"
+          onClick={() => handlePlaceTile()}
+        >
+          Place
+        </button>
       </div>
-      <div className="grid grid-cols-10 gap-0 w-auto h-auto mx-auto">
+            <div className="grid grid-cols-10 gap-0 w-auto h-auto mx-auto">
         {gridData &&
           gridData.map((row, rowIndex) =>
             row.map((tile, colIndex) => {
               const formattedColor = Number(tile.color);
-              const isSelected = rowIndex === xSelected && colIndex === ySelected;
+              const isSelected = selectedPixels.some(pixel => pixel.x === rowIndex && pixel.y === colIndex);
               return (
                 <div
                   key={`${rowIndex}-${colIndex}`}
-                  className={`w-12 h-12 border ${isSelected ? "border-4 border-white" : "border-white"}`} // Apply a blue border if the tile is selected
+                  className={`w-12 h-12 ${isSelected ? "border-4 border-white" : "border-white"}`} 
                   style={{ backgroundColor: colorMap[formattedColor] }}
                   onClick={() => {
                     handleTileSectionClick(rowIndex, colIndex);

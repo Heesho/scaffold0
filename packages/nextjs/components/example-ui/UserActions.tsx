@@ -2,6 +2,12 @@ import React, { useEffect, useState } from "react";
 import { BuyAction } from "~~/components/example-ui/BuyAction";
 import { ExerciseAction } from "~~/components/example-ui/ExerciseAction";
 import { SellAction } from "~~/components/example-ui/SellAction";
+import { RedeemAction } from "~~/components/example-ui/RedeemAction";
+import { StakeAction } from "~~/components/example-ui/StakeAction";
+import { UnstakeAction } from "~~/components/example-ui/UnstakeAction";
+import { BurnAction } from "./BurnAction";
+import { BorrowAction } from "./BorrowAction";
+import { RepayAction } from "./RepayAction";
 
 const UserActions: React.FC = () => {
   const [selectedAction, setSelectedAction] = useState<string>("Swap");
@@ -134,16 +140,16 @@ const UserActions: React.FC = () => {
     }
     if (selectedAction === "Options") {
       if (selectedSecondaryAction === "Exercise") return <ExerciseAction />;
-      if (selectedSecondaryAction === "Redeem") return <div className={commonStyles}>Redeem</div>;
+      if (selectedSecondaryAction === "Redeem") return <RedeemAction />;
     }
     if (selectedAction === "Earn") {
-      if (selectedSecondaryAction === "Stake") return <div className={commonStyles}>Stake</div>;
-      if (selectedSecondaryAction === "Unstake") return <div className={commonStyles}>Unstake</div>;
-      if (selectedSecondaryAction === "Burn") return <div className={commonStyles}>Burn</div>;
+      if (selectedSecondaryAction === "Stake") return <StakeAction />;
+      if (selectedSecondaryAction === "Unstake") return <UnstakeAction />;
+      if (selectedSecondaryAction === "Burn") return <BurnAction />;
     }
     if (selectedAction === "Lend") {
-      if (selectedSecondaryAction === "Borrow") return <div className={commonStyles}>Borrow</div>;
-      if (selectedSecondaryAction === "Repay") return <div className={commonStyles}>Repay</div>;
+      if (selectedSecondaryAction === "Borrow") return <BorrowAction />;
+      if (selectedSecondaryAction === "Repay") return <RepayAction />;
     }
     return null; // default case
   };

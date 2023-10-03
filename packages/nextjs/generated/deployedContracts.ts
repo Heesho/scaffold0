@@ -328,6 +328,11 @@ const contracts = {
                   name: "_gridRewarderFactory",
                   type: "address",
                 },
+                {
+                  internalType: "address",
+                  name: "_TOKENRewarder",
+                  type: "address",
+                },
               ],
               stateMutability: "nonpayable",
               type: "constructor",
@@ -560,6 +565,19 @@ const contracts = {
             {
               inputs: [],
               name: "OTOKEN",
+              outputs: [
+                {
+                  internalType: "address",
+                  name: "",
+                  type: "address",
+                },
+              ],
+              stateMutability: "view",
+              type: "function",
+            },
+            {
+              inputs: [],
+              name: "TOKENRewarder",
               outputs: [
                 {
                   internalType: "address",
@@ -4555,6 +4573,25 @@ const contracts = {
                 },
               ],
               name: "earned",
+              outputs: [
+                {
+                  internalType: "uint256",
+                  name: "",
+                  type: "uint256",
+                },
+              ],
+              stateMutability: "view",
+              type: "function",
+            },
+            {
+              inputs: [
+                {
+                  internalType: "address",
+                  name: "_account",
+                  type: "address",
+                },
+              ],
+              name: "getMaxWithdraw",
               outputs: [
                 {
                   internalType: "uint256",
